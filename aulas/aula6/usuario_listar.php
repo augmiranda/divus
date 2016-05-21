@@ -59,15 +59,15 @@ if(isset($_SESSION['alerts'])){
           <a class="navbar-brand" href="#">Projeto</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right">
-            <div class="form-group">
-              <input type="text" placeholder="E-mail" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Senha" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Login</button>
-          </form>
+          
+          <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+         <li><a href="usuario_listar.php">Usuário</a></li>
+         <li><a href="setor_listar.php">Setor</a></li>
+        </li>
+      </ul>
+
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
