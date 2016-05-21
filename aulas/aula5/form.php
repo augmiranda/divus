@@ -1,6 +1,5 @@
 <?php
 
-
 if($_POST){
 
 	$nome = (string)$_POST['nome'];
@@ -27,3 +26,25 @@ if($_POST){
 
 
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+
+<form action="" method="POST">
+
+	Nome: <input type="text" name="nome"/> <br><br>
+
+	Idade: <input type="text" name="idade"/> <br><br>
+
+	Habilitado: <input type="checkbox" name="habilitado"/> <br><br>
+
+	<button type="submit">Enviar</button>
+
+</form>
+
+</body>
+</html>
