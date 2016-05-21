@@ -101,7 +101,11 @@ if($_POST){
           <a class="navbar-brand" href="#">Projeto</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-         
+            <ul class="nav navbar-nav">
+             <li><a href="usuario_listar.php">Usuário</a></li>
+             <li><a href="setor_listar.php">Setor</a></li>
+            </li>
+          </ul>
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
