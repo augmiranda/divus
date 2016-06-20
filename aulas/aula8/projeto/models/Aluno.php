@@ -16,6 +16,7 @@ use Yii;
  */
 class Aluno extends \yii\db\ActiveRecord
 {
+    public $email_confirmacao;
     /**
      * @inheritdoc
      */
@@ -30,12 +31,20 @@ class Aluno extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['nome', 'matricula', 'email', 'cpf'], 'required'],
+            [['nome', 'matricula', 'email', 'cpf','email_confirmacao'], 'required'],
             [['habilitado'], 'boolean'],
             [['nome', 'email'], 'string', 'max' => 60],
             [['matricula'], 'string', 'max' => 10],
             [['cpf'], 'string', 'max' => 11],
+            [['email'], 'unique', 'message' => 'Ei doidao, esse email ja tem!'],
+            ['email', 'compare', 'compareAttribute' => 'email_confirmacao'],
         ];
+    }
+    
+    public function afterFind() {
+        
+        $this->nome = "Sr. " . strtoupper($this->nome);
+        
     }
 
     /**
@@ -44,12 +53,13 @@ class Aluno extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'codigo' => 'Codigo',
+            'codigo' => 'Código',
             'nome' => 'Nome',
             'matricula' => 'Matricula',
-            'email' => 'Email',
+            'email' => 'E-mail',
             'habilitado' => 'Habilitado',
-            'cpf' => 'Cpf',
+            'cpf' => 'CPF',
+            'email_confirmacao' => 'Confirmação de e-mail'
         ];
     }
 }

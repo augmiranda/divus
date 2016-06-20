@@ -17,6 +17,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'matricula')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+    
+     <?= $form->field($model, 'email_confirmacao')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'habilitado')->checkbox() ?>
 
