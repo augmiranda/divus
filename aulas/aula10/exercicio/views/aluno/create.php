@@ -23,16 +23,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <?php
-
-$password = "123456";
-echo Yii::$app->getSecurity()->generatePasswordHash($password) . "<br>";
-echo Yii::$app->getSecurity()->generatePasswordHash($password) . "<br>";
-echo Yii::$app->getSecurity()->generatePasswordHash($password) . "<br>";
-
-$hash = Yii::$app->getSecurity()->generatePasswordHash($password);
-
-if (Yii::$app->getSecurity()->validatePassword($password, $hash)) {
-    echo "senha e valida";
-}
+//
+//$password = "123456";
+//echo Yii::$app->getSecurity()->generatePasswordHash($password) . "<br>";
+//echo Yii::$app->getSecurity()->generatePasswordHash($password) . "<br>";
+//echo Yii::$app->getSecurity()->generatePasswordHash($password) . "<br>";
+//
+//$hash = Yii::$app->getSecurity()->generatePasswordHash($password);
+//
+//if (Yii::$app->getSecurity()->validatePassword($password, $hash)) {
+//    echo "senha e valida";
+//}
 
 ?>

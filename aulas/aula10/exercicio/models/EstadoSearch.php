@@ -5,12 +5,12 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Aluno;
+use app\models\Estado;
 
 /**
- * AlunoSearch represents the model behind the search form about `app\models\Aluno`.
+ * EstadoSearch represents the model behind the search form about `app\models\Estado`.
  */
-class AlunoSearch extends Aluno
+class EstadoSearch extends Estado
 {
     /**
      * @inheritdoc
@@ -18,9 +18,8 @@ class AlunoSearch extends Aluno
     public function rules()
     {
         return [
-            [['alun_codigo', 'muni_codigo'], 'integer'],
-            [['alun_nome', 'alun_matricula', 'alun_data_nascimento', 'alun_observacao', 'alun_data_criacao', 'alun_data_alteracao'], 'safe'],
-            [['alun_habilitado'], 'boolean'],
+            [['esta_codigo'], 'integer'],
+            [['esta_nome'], 'safe'],
         ];
     }
 
@@ -42,15 +41,12 @@ class AlunoSearch extends Aluno
      */
     public function search($params)
     {
-        $query = Aluno::find();
+        $query = Estado::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => [
-                'pageSize' => 20, // Tamanho da paginação
-            ],
         ]);
 
         $this->load($params);
@@ -63,17 +59,10 @@ class AlunoSearch extends Aluno
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'alun_codigo' => $this->alun_codigo,
-            'alun_data_nascimento' => $this->alun_data_nascimento,
-            'alun_habilitado' => $this->alun_habilitado,
-            'muni_codigo' => $this->muni_codigo,
-            'alun_data_criacao' => $this->alun_data_criacao,
-            'alun_data_alteracao' => $this->alun_data_alteracao,
+            'esta_codigo' => $this->esta_codigo,
         ]);
 
-        $query->andFilterWhere(['like', 'alun_nome', $this->alun_nome])
-            ->andFilterWhere(['like', 'alun_matricula', $this->alun_matricula])
-            ->andFilterWhere(['like', 'alun_observacao', $this->alun_observacao]);
+        $query->andFilterWhere(['like', 'esta_nome', $this->esta_nome]);
 
         return $dataProvider;
     }
