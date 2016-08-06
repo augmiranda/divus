@@ -19,6 +19,8 @@ use Yii;
  */
 class PedidoProduto extends \yii\db\ActiveRecord
 {
+    public $pepr_total;
+    
     /**
      * @inheritdoc
      */
@@ -36,7 +38,8 @@ class PedidoProduto extends \yii\db\ActiveRecord
             [['pedi_codigo', 'pepr_nome', 'pepr_quantidade', 'pepr_valor', 'prod_codigo'], 'required'],
             [['pedi_codigo', 'pepr_quantidade', 'prod_codigo'], 'integer'],
             [['pepr_valor'], 'number'],
-            [['pepr_nome'], 'string', 'max' => 160]
+            [['pepr_nome'], 'string', 'max' => 160],
+            [['pepr_total'], 'safe'],
         ];
     }
 
@@ -50,15 +53,21 @@ class PedidoProduto extends \yii\db\ActiveRecord
             'pedi_codigo' => 'Pedi Codigo',
             'pepr_nome' => 'Pepr Nome',
             'pepr_quantidade' => 'Quantidade',
-            'pepr_valor' => 'Pepr Valor',
-            'prod_codigo' => 'Produto',
+            'pepr_valor' => 'Valor unitario',
+            'prod_codigo' => 'Código do produto',
+            'pepr_total' => 'Total',
         ];
     }
 
+    public function afterFind(){
+        
+        $this->pepr_total = $this->pepr_quantidade * $this->pepr_valor;
+    }
+    
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPediCodigo()
+    public function getPedido()
     {
         return $this->hasOne(Pedido::className(), ['pedi_codigo' => 'pedi_codigo']);
     }
@@ -66,7 +75,7 @@ class PedidoProduto extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getProdCodigo()
+    public function getProduto()
     {
         return $this->hasOne(Produto::className(), ['prod_codigo' => 'prod_codigo']);
     }

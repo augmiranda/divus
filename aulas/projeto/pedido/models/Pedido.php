@@ -23,6 +23,8 @@ use yii\db\Expression;
  */
 class Pedido extends \yii\db\ActiveRecord
 {
+    public $clien_nome;
+    
     /**
      * @inheritdoc
      */
@@ -49,7 +51,7 @@ class Pedido extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['clien_codigo', 'usua_codigo', 'fopa_codigo'], 'required'],
+            [['clien_codigo', 'usua_codigo', 'fopa_codigo', 'clien_nome'], 'required'],
             [['pedi_data_criacao', 'pedi_data_alteracao'], 'safe'],
             [['clien_codigo', 'usua_codigo', 'fopa_codigo'], 'integer']
         ];
@@ -65,9 +67,16 @@ class Pedido extends \yii\db\ActiveRecord
             'pedi_data_criacao' => 'Data de criação',
             'pedi_data_alteracao' => 'Data de alteração',
             'clien_codigo' => 'Cliente',
+            'clien_nome' => 'Nome do cliente',
             'usua_codigo' => 'Usuário',
             'fopa_codigo' => 'Forma de pagamento',
         ];
+    }
+    
+    public function afterFind(){
+        
+        $this->clien_nome = $this->cliente->clien_nome;
+        
     }
 
     /**
@@ -97,7 +106,7 @@ class Pedido extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPedidoProdutos()
+    public function getProdutos()
     {
         return $this->hasMany(PedidoProduto::className(), ['pedi_codigo' => 'pedi_codigo']);
     }

@@ -4,10 +4,14 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Pedido;
+use app\models\PedidoProduto;
 use app\models\PedidoSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\db\Query;
+use yii\helpers\Json;
+use yii\filters\AccessControl;
 
 /**
  * PedidoController implements the CRUD actions for Pedido model.
@@ -23,9 +27,20 @@ class PedidoController extends Controller
                     'delete' => ['post'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => [Yii::$app->controller->action->id],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => [Yii::$app->controller->action->id],
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
         ];
     }
-
+    
     /**
      * Lists all Pedido models.
      * @return mixed
@@ -48,11 +63,16 @@ class PedidoController extends Controller
      */
     public function actionView($id)
     {
-        $produtos = \app\models\PedidoProduto::find(['pedi_codigo' => $id])->all();
+        $model = $this->findModel($id);
+        
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            
+            Yii::$app->session->setFlash('success', 'Pedido alterado com sucesso!');
+            
+        }
         
         return $this->render('view', [
-            'model' => $this->findModel($id),
-            'produtos' => $produtos,
+            'model' => $model,
         ]);
     }
     
@@ -65,38 +85,105 @@ class PedidoController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             
-            if($model->prod_codigo != null){
-                $produto = \app\models\Produto::findOne($model->prod_codigo);
-
-                $model->pepr_nome = $produto->prod_nome;
-                $model->pepr_valor = $produto->prod_valor;
+            $pedidoProduto = PedidoProduto::findOne(['pedi_codigo' => $id, 'prod_codigo' =>$model->prod_codigo]);
+            
+            if($pedidoProduto){
                 
-                $pedidoProduto = \app\models\PedidoProduto::findOne(['prod_codigo' => $model->prod_codigo]);
-    
-                if($pedidoProduto != null){
-                    
-                    $pedidoProduto->pepr_quantidade += $model->pepr_quantidade;
-                    
-                    if($pedidoProduto->save()){
-                        Yii::$app->session->setFlash('success', 'Produto alterado com sucesso!');
-                        return $this->redirect(['view', 'id' => $pedidoProduto->pedi_codigo]);
-                    }
-                            
-                }
+                $pedidoProduto->pepr_quantidade += $model->pepr_quantidade;   
                 
+                $pedidoProduto->save();
                 
-            }
-
-            if($model->save()){
+                Yii::$app->session->setFlash('success', 'Produto alterado com sucesso!');
+                
+            }else{
+                
+                $model->save();
+                
                 Yii::$app->session->setFlash('success', 'Produto adicionado com sucesso!');
-                return $this->redirect(['view', 'id' => $model->pedi_codigo]);
             }
+                
+            return $this->redirect(['view', 'id' => $model->pedi_codigo]);
         }
         
         return $this->render('adicionarProduto', [
             'model' => $model,
-            'pedido' => $pedido,
         ]);
+    }
+    
+    public function actionProdutoUpdate($id)
+    {
+        
+        $model =  PedidoProduto::findOne($id);
+     
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            
+            Yii::$app->session->setFlash('success', 'Produto alterado com sucesso!');
+                
+            return $this->redirect(['view', 'id' => $model->pedi_codigo]);
+        }
+        
+        return $this->render('adicionarProduto', [
+            'model' => $model,
+ 
+        ]);
+    }
+    
+    public function actionCliente($q = null) {
+        
+        $query = new Query;
+        
+        $id = (int) $q;
+
+        $rows = $query->select('clien_codigo,clien_nome')
+            ->from('cliente')
+            ->where("clien_nome ilike '%$q%' or clien_codigo = $id")
+            ->orderBy('clien_nome')
+            ->all();
+
+        $out = [];
+        
+        foreach ($rows as $row) {
+            $out[] = [
+                'label' => $row['clien_codigo'] . ' - ' . $row['clien_nome'],
+                'value' => $row['clien_codigo'],
+            ];
+        }
+     
+        echo Json::encode($out);
+    }
+    
+    public function actionProduto($q = null) {
+        
+        $query = new Query;
+
+        $rows = $query->select('prod_codigo,prod_nome,prod_valor')
+            ->from('produto')
+            ->where("prod_nome ilike '%$q%'")
+            ->orderBy('prod_nome')
+            ->all();
+
+        $out = [];
+        
+        foreach ($rows as $row) {
+            $out[] = [
+                'label' => $row['prod_codigo'] . ' - ' . $row['prod_nome'],
+                'value' => $row['prod_codigo'],
+                'produto' => $row
+            ];
+        }
+     
+        echo Json::encode($out);
+    }
+    
+    public function actionProdutoDelete($id)
+    {
+        $model = PedidoProduto::findOne($id);
+        
+        $model->delete();
+        
+        Yii::$app->session->setFlash('success', 'Produto deletado com sucesso!');
+
+        return $this->redirect(['view', 'id' => $model->pedi_codigo]);
     }
 
     /**
@@ -108,33 +195,11 @@ class PedidoController extends Controller
     {
         $model = new Pedido();
         $model->usua_codigo = Yii::$app->user->identity->id;
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->pedi_codigo]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Updates an existing Pedido model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->pedi_codigo]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
+        $model->clien_codigo = 1;
+        $model->fopa_codigo = 1;
+        $model->save();
+        
+        return $this->redirect(['view', 'id' => $model->pedi_codigo]);
     }
 
     /**

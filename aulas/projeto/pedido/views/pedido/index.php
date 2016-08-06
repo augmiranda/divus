@@ -21,7 +21,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        //'filterModel' => $searchModel,
+        'filterModel' => $searchModel,
+        'filterRowOptions' => ['style' => 'line-height:100px;'],
         'columns' => [
 
             'pedi_codigo',
